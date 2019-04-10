@@ -1,0 +1,27 @@
+#IT IS AN EXAMPLE - DO NOT CORRESPOND TO REAL DATA
+
+set Time := 1 2 3 4 6;
+
+param Qheating := # medium temperature heating demand
+1 11754
+2 6239.46
+3 1081.37
+4 1215.46
+6 20844.3
+;
+
+param top :=
+1 473
+2 693
+3 535
+4 543
+6 1
+;
+
+param MassWater :=
+1 335.8286
+2 178.2703
+3 30.8963
+4 34.7274
+6 595.5514
+;

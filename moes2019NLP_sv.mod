@@ -33,6 +33,7 @@ param MassWater{Time}; # [KJ/(s degC)] MCp of water in the heat exchanger;
 ################################
 # Variables
 var dTminDC_1{Time} >= 0.1; #[deg C] minimum temperature difference in the heat recovery heat exchanger
+
 #var dTminDC_2{Time} >= 0.1; #[deg C] minimum temperature difference in the heat recovery heat exchanger
 
 var TDCout{Time} >= lower_TDCout, <= 59.999; #[deg C] temperature of air coming from data center out of the heat recovery HE
@@ -61,11 +62,10 @@ param MassDC := 19.1; # [KJ/(s degC)] MCp of air coming out of DC;
 # Constraints
 ####### Direct Heat Exchanger;
 
+
 #subject to Tcontrol1{t in Time}: # condition to ensure that a certain temperature is higher than other.
-	
 
 #subject to Tcontrol2 {t in Time}: # condition to ensure that a certain temperature is higher than other.
-
 
 subject to dTminDataCenter_1 {t in Time}: # DTmin counter-current heat exchanger
 	TDCout[t] = EPFLMediumOut + dTminDC_1[t];
@@ -87,7 +87,6 @@ subject to balancemax{t in Time}: # the maximum heat extracted is for sure lower
 
 
 ## MEETING HEATING DEMAND, ELECTRICAL CONSUMPTION
-
 
 subject to Electricity{t in Time}: #the electricity consumed in the HP can be computed using the heat delivered and the heat extracted
 	E[t] = Qcond[t] - Qevap[t];

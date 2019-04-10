@@ -37,6 +37,7 @@ display TLMCond;
 display Qevap;
 display Qcond;
 display COP;
+display TLMEvapHP;
 
 display OPEX;
 display CAPEX;

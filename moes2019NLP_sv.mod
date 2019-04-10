@@ -37,7 +37,7 @@ var dTminDC_1{Time} >= 0.1; #[deg C] minimum temperature difference in the heat 
 #var dTminDC_2{Time} >= 0.1; #[deg C] minimum temperature difference in the heat recovery heat exchanger
 
 var TDCout{Time} >= lower_TDCout, <= 59.999; #[deg C] temperature of air coming from data center out of the heat recovery HE
-var AHEDC >= 0.0001; #[m2] area of heat recovery heat exchanger
+var AHEDC >= 50, <= 250; #[m2] area of heat recovery heat exchanger
 var dTLMDC{Time} >= 0.01, <= 50; #logarithmic mean temperature difference in the heat recovery heat exchanger
 var TRadin{Time} >= 30, <=60; #Outlet temperature of the HEX and entering the condenser.
 
@@ -80,10 +80,10 @@ subject to HeatBalance1{t in Time}: # Heat provided by the DC computed as a func
 	Qrad[t] = MassDC*(TDCin - TDCout[t]);
 
 subject to AreaHEDC{t in Time}: #the area of the heat recovery HE can be computed using the heat extracted, the heat transfer coefficient and the logarithmic mean temperature difference 
-	AHEDC >= Qrad[t]/(UDC*dTLMDC[t]);
+	AHEDC >= (Qrad[t]/(UDC*dTLMDC[t]));
 
 subject to balancemax{t in Time}: # the maximum heat extracted is for sure lower than the total heating demand; pay attention to the units!
-	Qrad[t] <= Qheating[t];
+	Qevap[t] <= Qcond[t];
 
 
 ## MEETING HEATING DEMAND, ELECTRICAL CONSUMPTION
@@ -98,16 +98,16 @@ subject to COPerformance{t in Time}: #the COP can be computed using the carnot e
 	COP[t] = CarnotEff*(TLMCond[t]/(TLMCond[t] - TLMEvapHP));
 
 subject to TLMCondensor{t in Time}: #the logarithmic mean temperature in the condenser. Note: should be in K
-	TLMCond[t] = (EPFLMediumT - TRadin[t])/log(EPFLMediumT/TRadin[t]);
+	TLMCond[t] = (EPFLMediumT - TRadin[t])/log((EPFLMediumT + 273)/(TRadin[t] + 273));
 
 subject to TLMEvaporatorHPhigh: #the logarithmic mean temperature in the evaporator can be computed using the inlet and outlet temperatures, Note: should be in K
-	TLMEvapHP = (THPhighin - THPhighout)/log(THPhighin/THPhighout);
+	TLMEvapHP = (THPhighin - THPhighout)/log((THPhighin + 273)/(THPhighout + 273));
 
 subject to QEPFLausanne{t in Time}: #the heat demand of EPFL should be the sum of the heat delivered by the 2 systems;
 	Qheating[t] = Qrad[t] + Qcond[t];	
 
 subject to OPEXcost: #the operating cost can be computed using the electricity consumed in the heat pump.
-	OPEX = sum{t in Time}(top[t]*Qcond[t]*Cel/COP[t]);
+	OPEX = sum{t in Time}(top[t]*E[t]*Cel);
 
 subject to CAPEXcost: #the investment cost can be computed using the area of the heat recovery heat exchanegr
 	CAPEX = (INew/IRef)*aHE*(AHEDC^bHE)*FBMHE* (i*(1+i)^n)/((1+i)^n - 1);

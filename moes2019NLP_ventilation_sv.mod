@@ -4,19 +4,21 @@
 # Sets & Parameters
 reset;
 set Time; #your time set from the MILP part
+set Buildings;
 
 param Irr{t in Time}; 
 param Qpeople{t in Time};
-param Qelec{t in Time};
+param Qelec{b in Buildings};
 param Text{t in Time};
-param Area; #defined .dat file.
+param Area{b in Buildings}; #defined .dat file.
+param totArea = 142982; #Sum of heated area of medium temperature buildings
 
 param Tint := 21;
-param Uenv := 0.0034; # could be changed according to kth; (kW/(m2.K))
+param Uenv{b in Buildings}; # could be changed according to kth; (kW/(m2.K))
 param mair := 0.00069444; # m3/m2/s
 param Cpair := 1.152; # kJ/m3K
 param Uvent := 0.025; # air-air HEX
-param ksun := 0.05; # ksun value
+param ksun{b in Buildings}; # ksun value
 
 param EPFLMediumT:= 65; ##[degC] - desired temperature high temperature loop
 param EPFLMediumOut := 30; # temperature of return low temperature loop
@@ -76,13 +78,13 @@ subject to sure_temp2 {t in Time}: # condition to ensure that a certain temperat
 Trelease[t] >= Text[t];
 
 subject to HeatingLoad1 {t in Time}: #The heating demand calculation; pay attention to the UNITS;
-Qheating[t] = Area*((Uenv*(Tint-Text[t]))+(mair*Cpair*(Tint-Text_new[t]))-(ksun*Irr[t])-Qpeople[t])-Qelec[t];
+Qheating[t] = sum{b in Building} ( max(Area[b]*((Uenv[b]*(Tint-Text[t]))+(mair*Cpair*(Tint-Text_new[t]))-(ksun[b]*Irr[t])-Qpeople[t])-Qelec[b]),0);
 
 subject to Heat_Vent1 {t in Time}: # Ventilation heat provided by one side of the HEX
-Heat_Vent[t] = Area*Cpair*mair*(Text_new[t]-Text[t]);
+Heat_Vent[t] = totArea*Cpair*mair*(Text_new[t]-Text[t]);
 
 subject to Heat_Vent2 {t in Time}: # Ventilation heat extracted (provided) by the other side of the HEX
-Heat_Vent[t] = Area*Cpair*mair*(Tint-Trelease[t]);
+Heat_Vent[t] = totArea*Cpair*mair*(Tint-Trelease[t]);
 
 subject to DTLNVent1 {t in Time}: #DTLN HEX - pay attention to this value
 DTLNVent[t] = (((Tint-Text_new[t])*(Trelease[t]-Text[t])^2+(Trelease[t]-Text[t])*(Tint-Text_new[t])^2)/2)^(1/3);

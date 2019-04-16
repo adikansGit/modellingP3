@@ -1,6 +1,8 @@
 #IT IS AN EXAMPLE - DO NOT CORRESPOND TO REAL DATA; PAY ATTENTION TO THE UNITS;
 
 set Time := 1 2 3 4 6;
+set Buildings := GC CE MA GR CM BI CH PH;
+
 
 param Irr := # 
 1 0.067

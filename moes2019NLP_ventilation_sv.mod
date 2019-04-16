@@ -78,7 +78,7 @@ subject to sure_temp2 {t in Time}: # condition to ensure that a certain temperat
 Trelease[t] >= Text[t];
 
 subject to HeatingLoad1 {t in Time}: #The heating demand calculation; pay attention to the UNITS;
-Qheating[t] = sum{b in Building} ( max(Area[b]*((Uenv[b]*(Tint-Text[t]))+(mair*Cpair*(Tint-Text_new[t]))-(ksun[b]*Irr[t])-Qpeople[t])-Qelec[b]),0);
+Qheating[t] = sum{b in Buildings} ( max(Area[b]*((Uenv[b]*(Tint-Text[t]))+(mair*Cpair*(Tint-Text_new[t]))-(ksun[b]*Irr[t])-Qpeople[t])-Qelec[b]),0);
 
 subject to Heat_Vent1 {t in Time}: # Ventilation heat provided by one side of the HEX
 Heat_Vent[t] = totArea*Cpair*mair*(Text_new[t]-Text[t]);

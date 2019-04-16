@@ -37,7 +37,7 @@ param INew := 605.7; #chemical engineering plant cost index (2015)
 param IRef := 394.1; #chemical engineering plant cost index (2000)
 param aHE := 1200; #HE cost parameter
 param bHE := 0.6; #HE cost parameter
-param Trelease2 = 5;
+#param Trelease2 = 13;
 
 ################################
 # Variables
@@ -66,10 +66,10 @@ var TLMEvapHP2{Time} >= 0.0001; #[K] logarithmic mean temperature in the evapora
 
 var Heat_Vent{Time} >= 0.0001;
 var DTLNVent{Time} >= 0.0001;
-var Area_Vent >=0.1;
+var Area_Vent >=0.1, <= 500;
 var DTminVent{Time} >= 0.1;	#Made this a variable in Time so the condition is satisfied separately in each time period.
 
-#var Trelease2{Time} >=5; #outlet temperature after air-water heat pump evaporator
+var Trelease2 >=5, <= 15; #outlet temperature after air-water heat pump evaporator
 
 ################################
 # Constraints
@@ -77,8 +77,8 @@ var DTminVent{Time} >= 0.1;	#Made this a variable in Time so the condition is sa
 subject to sure_temp {t in Time}: # condition to ensure that a certain temperature is higher than other.
 Text_new[t] <= Tint;
 
-subject to sure_temp2 {t in Time}: # condition to ensure that a certain temperature is higher than other.
-Trelease[t] >= Text[t];
+#subject to sure_temp2 {t in Time}: # condition to ensure that a certain temperature is higher than other.
+#Trelease[t] >= Text[t];
 
 subject to sure_temp3 {t in Time}: # condition to ensure that a certain temperature is higher than other.
 Trelease[t] >= Trelease2;
@@ -136,7 +136,7 @@ Qevap2[t] = totArea*mair*Cpair*(Trelease[t] - Trelease2);
 
 
 subject to dTLMEvaporatorHPhigh{t in Time}: #the logarithmic mean temperature (2nd HP) can be computed using the inlet and outlet temperatures, Note: should be in K
-TLMEvapHP2[t] = (((Trelease[t]*Trelease2)^2+(Trelease2*Trelease[t])^2)/2)^(1/3);
+TLMEvapHP2[t] = ((((Trelease[t]+273)*(Trelease2+273)^2) + ((Trelease2+273)*(Trelease[t]+273)^2))/2)^(1/3);
 #(Trelease[t] - Trelease2)/log((Trelease[t] + 273)/(Trelease2 + 273));
 
 
